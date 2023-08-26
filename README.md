@@ -1,7 +1,7 @@
 # MERN Stack Docker
 ===================
 
-### 1. Create api folder and make initial Dockerfile in the api folder
+### API-1. Create api directory and make initial Dockerfile in the api directory
 1) Dockerfile
    ```Dockerfile
       FROM node:20.5.1-bookworm-slim
@@ -9,26 +9,26 @@
       WORKDIR /app
    ```
 
-1) Then, in the terminal run
-   ```
+2) Then, in the api terminal run
+   ```bash
       docker build -t api .
    ```
 
-2) Enter into the docker container
-   ```
+3) Enter into the docker container
+   ```bash
       docker run -it -v $(pwd):/app --name api-1 api sh   
    ```
 
-3) In the container, type ```whoami```, it will show node username since we put ```USER node``` in the second line of the Dockerfile. Without this, the user will be ```root```. ```USER node``` will ensure to prevent user permission issues while coding afterwards.
+4) In the container, type ```whoami```, it will show node username since we put ```USER node``` in the second line of the Dockerfile. Without this, the user will be ```root```. ```USER node``` will ensure to prevent user permission issues while coding afterwards.
 
-4) Continue setup in the container.
+5) Continue setup in the container.
     ```
       npm init -y
       npm i express
       npm i -D nodemon
     ```
 
-5) Make index.js file
+6) Make index.js file
    ```javascript
       const express = require('express')
       const app = express()
@@ -45,20 +45,20 @@
       })
    ```
 
-6) Add the following "dev" script in the package.json file
-   ```
+7) Add the following "dev" script in the package.json file
+   ```json
       "scripts": {
          "test": "echo \"Error: no test specified\" && exit 1",
          "dev": "nodemon index.js"
       },
    ```
 
-7) If you followed correctly up to this point, if you run ```npm run dev``` in the container, it will show the ```nodemon``` is listening on port 3000. Press Ctrl+C to stop ```nodemon```
+8) If you followed correctly up to this point, if you run ```npm run dev``` in the container, it will show the ```nodemon``` is listening on port 3000. Press Ctrl+C to stop ```nodemon```
 
-8) Exit from the container
+9) Exit from the container
 
 
-### 2. Update the Dockerfile in the api folder to the final version
+### API-2. Update the Dockerfile in the api directory to the final version
 1) Dockerfile
    ```Dockerfile
       FROM node:20.5.1-bookworm-slim
@@ -72,15 +72,64 @@
 
    From above ```--chown=node:node``` changes the permission of the files from the root user to node user.
 
-2) Build the api docker image again.
+2) Add .dockerignore file.
+   ```.dockerignore
+      node_modules
    ```
+
+3) Build the api docker image again. 
+   ```bash
       docker build -t api .
    ```
 
-3) Run the container, and test if it is working
-   ```
+4) Run the container, and test if it is working
+   ```bash
       docker run -d -p 3000:3000 -v $(pwd):/app -v /app/node_modules --name api-1 api
       curl localhost:3000
    ```
 
    It should show ```json message``` on the cli.
+
+
+### Front-1. Create front directory and make initial Dockerfile in the front directory
+1) Dockerfile
+   ```Dockerfile
+      FROM node:20.5.1-bookworm-slim
+      USER node
+      WORKDIR /app
+   ```
+
+2) Then, in the front directory terminal run
+   ```bash
+      docker build -t front .
+   ```
+
+3) Enter into the docker container
+   ```bash
+      docker run -it -v $(pwd):/app --name front-1 front sh   
+   ```
+
+   In the container, initialize the react vite. But if there is any file in the directory where the react vite is installed, it emits error. So, tentantively move the Dockerfile fromt the front directory to the MERN home directory in the separate host terminal.
+
+   ```bash
+      # in the host directory
+      ~/MERN $ cd front
+      ~/MERN/front $ mv Dockerfile
+
+      # in the container
+      $ npm create vite@latest
+      # in the project name question, type "." so that the react vite is installed in the front directory. And then, choose appropriate framework and its variant
+      $ npm install
+      $ npm run dev      
+   ```
+
+   If you followed correctly up to this point, if you run ```npm run dev```, it should show running message of react vite. Press Ctrl+C to stop react vite.
+
+4) In the host terminal, move back the Dockerfile to the front directory
+   ```bash
+      # in the host directory
+      ~/MERN $ cd Dockerfile ./front
+   ```
+
+5) Exit from the front container
+
