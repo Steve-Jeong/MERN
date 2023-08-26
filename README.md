@@ -153,15 +153,34 @@
       node_modules
    ```
 
-3) Build the api docker image again. 
+3) In the vscode front directory, change vite.config.js as follows
+   ```javascript
+      import { defineConfig } from 'vite'
+      import react from '@vitejs/plugin-react'
+
+      // https://vitejs.dev/config/
+      export default defineConfig({
+         plugins: [react()],
+         server: {
+            watch: {
+               usePolling: true
+            },
+            host: true,
+            strictPort: true,
+            port: 5173
+         }
+      })
+   ```
+
+4) Build the api docker image again. 
    ```bash
       docker build -t front .
    ```
 
-4) Run the container, and test if it is working
+5) Run the container, and test if it is working
    ```bash
-      docker run -d -p 3000:3000 -v $(pwd):/app -v /app/node_modules --name front-1 api
-      curl localhost:3000
+      docker run -d -p 5173:5173 -v $(pwd):/app -v /app/node_modules --name front-1 front
+      curl localhost:5173
    ```
 
    It should show ```json message``` on the cli.
