@@ -133,3 +133,35 @@
 
 5) Exit from the front container
 
+
+### FRONT-2. Update the Dockerfile in the front directory to the final version
+1) Dockerfile
+   ```Dockerfile
+      FROM node:20.5.1-bookworm-slim
+      USER node
+      WORKDIR /app
+      COPY --chown=node:node package*.json ./
+      RUN npm ci
+      COPY --chown=node:node ./ ./
+      CMD [ "npm", "run", "dev" ]
+   ```
+
+   From above ```--chown=node:node``` changes the permission of the files from the root user to node user.
+
+2) Add .dockerignore file.
+   ```.dockerignore
+      node_modules
+   ```
+
+3) Build the api docker image again. 
+   ```bash
+      docker build -t front .
+   ```
+
+4) Run the container, and test if it is working
+   ```bash
+      docker run -d -p 3000:3000 -v $(pwd):/app -v /app/node_modules --name front-1 api
+      curl localhost:3000
+   ```
+
+   It should show ```json message``` on the cli.
