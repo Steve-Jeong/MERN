@@ -1,5 +1,5 @@
 # MERN Stack Docker
-===================
+
 
 ### API-1. Create api directory and make initial Dockerfile in the api directory
 1) Dockerfile
@@ -184,3 +184,34 @@
    ```
 
    It should show ```json message``` on the cli.
+
+
+### Docker Compose-1. 
+1) Set api and front into docker-compose.yml
+   ```docker-compose.yml
+      version: '3.9'
+      services:
+         api:
+            build: 
+               context: ./api
+            ports:
+               - 3000:3000
+            volumes:
+               - ./api:/app
+               - /app/node_modules
+
+         front:
+            build: 
+               context: ./front
+            ports:
+               - 5173:5173
+            volumes:
+               - ./front:/app
+               - /app/node_modules
+   ```
+
+2) Check if it is working the same as before
+   ```bash
+      curl localhost:3000
+      curl localhost:5173
+   ```
